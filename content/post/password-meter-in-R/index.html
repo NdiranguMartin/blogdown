@@ -1,0 +1,378 @@
+---
+title: "Password Strength Meter in R"
+author: "Martin Wanjiru"
+date: "2020-05-21"
+output: 
+  html_document
+---
+
+
+
+<p>Passwords. Keys to our riches, or our personal info. Equivalent to the keys to a safe box if this was 1967. But its 2020, so you’ve put most of your stuff online. But how secure are your passwords? Let me guess; it’s your phone number! Or a combo of your first name and your year of birth! But probably not. You probably have invested time to think and come up with a strong password. But how strong is it anyway? Have you tried running it in a password meter? I don’t know, but I hope you got it right. Anyway, I needed a password meter. I wanted to know how strong or weak my password was. That’s how I came across <a href="http://www.passwordmeter.com/" class="uri">http://www.passwordmeter.com/</a>. The site indicated how the calculations were made, which I found interesting. I thought about doing it in R, because it was all about REGEX, and I enjoy dealing with strings. At that moment, I couldn’t do much, but finally, here we are!</p>
+<p>There are really no given set of rules or requirements for a password. This varies typically from website to website. However, we can say with some substantial level of confidence that the rules below are most common. An acceptable password;</p>
+<ul>
+<li>Must have a minimum of 8 characters</li>
+<li>Contains at least each of the following;
+<ul>
+<li>Upper case letter</li>
+<li>Lower case letter</li>
+<li>Number</li>
+<li>Symbol</li>
+</ul></li>
+</ul>
+<p>For the password meter above and this blog, the rules that will be used are</p>
+<ul>
+<li>A minimum of 8 characters. This is mandatory. Even if all other requirements are met, and this is not, there will be no score for requirements (we’ll see that later)</li>
+<li>Contains 3/4 of the following
+<ul>
+<li>Upper case letter</li>
+<li>Lower case letter</li>
+<li>Number</li>
+<li>Symbol</li>
+</ul></li>
+</ul>
+<p>To determine the password strength, some patterns in the password will lead to the addition of points, while others will lead to deductions. When we tackle each pattern, we’ll explore how it contributes to the password meter.</p>
+<p>These are the patterns that result in additions.</p>
+<ul>
+<li>Requirements stated above</li>
+<li>Number of Characters</li>
+<li>Uppercase Letters</li>
+<li>Lowercase Letters</li>
+<li>Numbers</li>
+<li>Symbols</li>
+<li>Middle Numbers or Symbols</li>
+</ul>
+<p>These are the patterns that lead to deductions.</p>
+<ul>
+<li>Letters only</li>
+<li>Numbers only</li>
+<li>Repeat Characters (Case Insensitive)</li>
+<li>Consecutive Uppercase Letters<br />
+</li>
+<li>Consecutive Lowercase Letters<br />
+</li>
+<li>Consecutive Numbers<br />
+</li>
+<li>Sequential Letters (3+)<br />
+</li>
+<li>Sequential Numbers (3+)<br />
+</li>
+<li>Sequential Symbols (3+)</li>
+</ul>
+<p>For each (addition and subtraction), we will get the count and, in the end, find the total. We will then create a function that takes in the password and returns the score of every pattern. For each pattern, we will use relevant examples to see how the output will look like.</p>
+<p>Loading required libraries;</p>
+<pre class="r"><code>library(stringi)
+library(stringr)</code></pre>
+<div id="addition" class="section level2">
+<h2>Addition</h2>
+<p>Number of Characters</p>
+<pre class="r"><code>password = &quot;PasswordTest34#&quot;
+num_chars = nchar(password)
+num_chars</code></pre>
+<pre><code>## [1] 15</code></pre>
+<p>Uppercase Letters</p>
+<pre class="r"><code>upper_case = stringi::stri_count(password, regex  = &quot;[A-Z]&quot;)
+upper_case</code></pre>
+<pre><code>## [1] 2</code></pre>
+<p>Lowercase Letters</p>
+<pre class="r"><code>lower_case = stringi::stri_count(password, regex  = &quot;[a-z]&quot;)
+lower_case</code></pre>
+<pre><code>## [1] 10</code></pre>
+<p>Numbers</p>
+<pre class="r"><code>nums = stringi::stri_count(password, regex  = &quot;[0-9]&quot;)
+nums</code></pre>
+<pre><code>## [1] 2</code></pre>
+<p>Symbols</p>
+<p>Here, we create a vector that contains all the possibly symbols (or at least all possible symbols I could trace. Forgive me if I repeated any)</p>
+<pre class="r"><code>symbols = c(&quot;~&quot;, &quot;!&quot;, &quot;@&quot;, &quot;#&quot;, &quot;\\$&quot;, &quot;%&quot;, &quot;\\^&quot;, &quot;&amp;&quot;, &quot;\\*&quot;, &quot;\\(&quot; ,&quot;\\)&quot;, &quot;-&quot;, &quot;\\+&quot;, &quot;\\_&quot;, &quot;=&quot;, &quot;`&quot; ,
+              &quot;\\{&quot; ,&quot;\\}&quot; ,&quot;\\[&quot; ,&quot;\\]&quot;,&quot;:&quot;, &quot;;&quot; , &quot;&lt;&quot; , &quot;&gt;&quot;, &quot;\\?&quot; ,&quot;,&quot; ,&quot;\\.&quot;, &quot;\\&#39;&quot;, &quot;@&quot;, &quot;#&quot;, noquote(&quot;\&quot;&quot;))</code></pre>
+<p>We then look for the count of these symbols in the password</p>
+<pre class="r"><code>num_symbols = stringr::str_count(password, paste(symbols, collapse = &quot;|&quot;))
+num_symbols</code></pre>
+<pre><code>## [1] 1</code></pre>
+<p>Mid numbers and symbols</p>
+<p>To get the number of middle symbols and numbers, we first eliminate the first and last characters, then count the number of numbers and symbols</p>
+<pre class="r"><code>mid_chars = gsub(&#39;^.|.$&#39;, &#39;&#39;, password)
+mid_chars</code></pre>
+<pre><code>## [1] &quot;asswordTest34&quot;</code></pre>
+<pre class="r"><code>midnums = stringi::stri_count(mid_chars, regex  = &quot;[0-9]&quot;)
+midnums</code></pre>
+<pre><code>## [1] 2</code></pre>
+<pre class="r"><code>mid_symbols = stringr::str_count(mid_chars, paste(symbols, collapse = &quot;|&quot;))
+mid_symbols</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p>All good! Now its time to create the actual scores from these counts. Some conditions will have to be met for some of these to apply, while others will not require any condition.</p>
+<p>The requirements score is a tricky one. For the requirements score to exist, the mandatory requirement of 8 characters should be met and the 3 out of 4 other requirements. If any misses, then its a zero. So we will,</p>
+<ol style="list-style-type: decimal">
+<li>Create a vector that contains the four requirements (requirements) from which at least three should be met.</li>
+<li>Create a requirements score (requirements_score) vector and set it at zero.</li>
+<li>Loop over the vector (requirements), when a value is greater than 1 (meaning the requirement has been met), we increase the requirement score by 1</li>
+<li>Check whether the password has more than eight characters. If not, we set the requirements score to 0. If the count is greater than 8, we check whether the requirement score coming from the loop above is greater than or equal to three. If so, then we add 1 to the requirement score (since the password has more than eight characters) then multiply by 2.</li>
+</ol>
+<pre class="r"><code>requirements = c(upper_case, lower_case, nums, num_symbols)
+requirements</code></pre>
+<pre><code>## [1]  2 10  2  1</code></pre>
+<pre class="r"><code>requirements_score = 0
+for (i in requirements) {
+  if(i &gt; 0) requirements_score = requirements_score + 1 
+}
+requirements_score</code></pre>
+<pre><code>## [1] 4</code></pre>
+<pre class="r"><code>requirements_score = ifelse(num_chars &lt; 8, 0, 
+                            ifelse((requirements_score) &gt;= 3, (requirements_score + 1) * 2, 0))
+requirements_score</code></pre>
+<pre><code>## [1] 10</code></pre>
+<p>The character count score is 4 times the number of characters</p>
+<pre class="r"><code>character_count_score = (num_chars * 4)
+character_count_score</code></pre>
+<pre><code>## [1] 60</code></pre>
+<p>The upper case score will only apply if the password contains upper case letters. If there are no upper case letters, the score will be zero. Otherwise, the score will be the difference of the number of characters and the number of uppercase letters multiplied by two.</p>
+<pre class="r"><code>upper_case_score = ifelse(upper_case == 0, 0, ((num_chars - upper_case)*2))
+upper_case_score</code></pre>
+<pre><code>## [1] 26</code></pre>
+<p>The lower case score will be similar to the upper case score</p>
+<pre class="r"><code>lower_case_score = ifelse(lower_case == 0, 0, ((num_chars - lower_case)*2))
+lower_case_score</code></pre>
+<pre><code>## [1] 10</code></pre>
+<p>The numbers score is 4 times the number of numbers in the password.However, it only applys if the password has other characters apart from numbers</p>
+<pre class="r"><code>numbers_score = ifelse(upper_case &gt; 0 | lower_case &gt; 0 | num_symbols &gt; 0, (nums * 4), 0)
+numbers_score</code></pre>
+<pre><code>## [1] 8</code></pre>
+<p>The symbols score will be six times the count of symbols</p>
+<pre class="r"><code>symbols_score = num_symbols * 6
+symbols_score</code></pre>
+<pre><code>## [1] 6</code></pre>
+<p>The mid number and symbol score will be twice the count of numbers and symbols in the middle</p>
+<pre class="r"><code>mid_nums_symbol_score = ((midnums + mid_symbols) * 2)
+mid_nums_symbol_score</code></pre>
+<pre><code>## [1] 4</code></pre>
+<p>We now add together all the addition scores and store them</p>
+<pre class="r"><code>total_additions = 0 + requirements_score + character_count_score + upper_case_score + lower_case_score + numbers_score + symbols_score + mid_nums_symbol_score
+total_additions</code></pre>
+<pre><code>## [1] 124</code></pre>
+</div>
+<div id="subtraction" class="section level2">
+<h2>Subtraction</h2>
+<p>Now, lets explore the patterns that lead to deductions. Some are straight forward, but most of them will require us to do something extra! But we are up to the task!</p>
+<p>letters only</p>
+<p>There will be deduction if the password has letters only. To check this, we can compare the number of characters and the number of uppercase and lowercase letters</p>
+<pre class="r"><code>letters_only = ifelse(num_chars == (upper_case + lower_case), num_chars, 0)
+letters_only</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p>numbers only</p>
+<pre class="r"><code>numbers_only = ifelse(num_chars == (nums), num_chars, 0)
+numbers_only</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p>consecutive uppercase letters</p>
+<p>Here, we will a password that has consecutive uppercase letters i.e. PASSwordTEst34#, then we will:</p>
+<ol style="list-style-type: decimal">
+<li>first create a function that takes in our password and returns a vector with each character as an object of the vector.</li>
+</ol>
+<pre class="r"><code>password = &quot;PASSwordTEst34#&quot;
+split_function = function(password){
+    password = str_extract_all(password, paste(c(&quot;[a-z]&quot;, &quot;[A-Z]&quot;, &quot;[0-9]&quot;, symbols), collapse = &quot;|&quot;))
+    password = password[[1]]
+    return(password)
+}
+split_pass = split_function(password)
+split_pass</code></pre>
+<pre><code>##  [1] &quot;P&quot; &quot;A&quot; &quot;S&quot; &quot;S&quot; &quot;w&quot; &quot;o&quot; &quot;r&quot; &quot;d&quot; &quot;T&quot; &quot;E&quot; &quot;s&quot; &quot;t&quot; &quot;3&quot; &quot;4&quot; &quot;#&quot;</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>We check for uppercase letters. We want to return 1 if it is an uppercase letter and 0 if not</li>
+</ol>
+<pre class="r"><code>consecutive_upper = ifelse(split_pass %in% LETTERS, 1, 0)
+consecutive_upper</code></pre>
+<pre><code>##  [1] 1 1 1 1 0 0 0 0 1 1 0 0 0 0 0</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Now, we want to know how many consecutive zeros and ones are there in our output. The function below will return values and their lengths. For instance, we get that 1 has been repeated four times, then 0 four times, 1 two times and and 0 five times.</li>
+</ol>
+<pre class="r"><code>r = rle(consecutive_upper)
+r</code></pre>
+<pre><code>## Run Length Encoding
+##   lengths: int [1:4] 4 4 2 5
+##   values : num [1:4] 1 0 1 0</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>We are interested in the 1s, that translate to uppercase letters as we saw above. We will therefore extract where the value is 1. Further, for it to be considered consecutive, there must be 2 or more in the length. If three letters are consecutive, the length above will be 3, but ideally thats two cases of consecutive letters. Therefore, while extracting, we will subtract one.</li>
+</ol>
+<pre class="r"><code>consecutive_upper = (r$lengths[r$values == 1]) - 1
+consecutive_upper</code></pre>
+<pre><code>## [1] 3 1</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>The output above is the number of times there are consecutive uppercase letters in different instances. So the sum will give us the total instances of consecutive uppercase letters.</li>
+</ol>
+<pre class="r"><code>consecutive_upper = sum(consecutive_upper)
+consecutive_upper</code></pre>
+<pre><code>## [1] 4</code></pre>
+<p>Lowercase letters</p>
+<p>The above procedure is repeated to get the total number of instances with consecutive lowercase letters</p>
+<pre class="r"><code>split_pass = split_function(password)
+consecutive_lower = ifelse(split_pass %in% letters, 1, 0)
+r = rle(consecutive_lower)
+consecutive_lower = (r$lengths[r$values == 1]) - 1
+consecutive_lower = sum(consecutive_lower)
+consecutive_lower</code></pre>
+<pre><code>## [1] 4</code></pre>
+<p>Consecutive numbers</p>
+<pre class="r"><code>split_pass = split_function(password)
+consecutive_numbers = ifelse(split_pass %in% (0:9), 1, 0)
+r = rle(consecutive_numbers)
+consecutive_numbers = (r$lengths[r$values == 1]) - 1
+consecutive_numbers = sum(consecutive_numbers)
+consecutive_numbers</code></pre>
+<pre><code>## [1] 1</code></pre>
+<p>Letters, numbers, and symbols sequence</p>
+<p>Here, we want to check for any sequential letters, which respect to the alphabet regardless of the case. For it to be a sequence, the minimum sequential letters that must be there is 3. For instance, if the password is “abcdef”, then the instances of sequential letters are abc, bcd, cde, and def. i.e. four instances. The sequence can also be in reverse order. For instance, “mlkji” is still a sequence! The same case applies to numbers (0-9) and symbols (~ to +)
+To achieve this, we will;</p>
+<ol style="list-style-type: decimal">
+<li>For letters, we will first get the position in the alphabet irrespective of the case. If the character is not in the alphabet, we will get a zero.</li>
+</ol>
+<pre class="r"><code>password = &quot;uVwxYz123$EDcba!@#&quot;
+split_pass =split_function(password)
+split_pass</code></pre>
+<pre><code>##  [1] &quot;u&quot; &quot;V&quot; &quot;w&quot; &quot;x&quot; &quot;Y&quot; &quot;z&quot; &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;$&quot; &quot;E&quot; &quot;D&quot; &quot;c&quot; &quot;b&quot; &quot;a&quot; &quot;!&quot; &quot;@&quot; &quot;#&quot;</code></pre>
+<pre class="r"><code>sequence_check = ifelse(tolower(split_pass) %in% letters, match(tolower(split_pass), letters), 0)
+sequence_check</code></pre>
+<pre><code>##  [1] 21 22 23 24 25 26  0  0  0  0  5  4  3  2  1  0  0  0</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>We will then absolute get the difference of the output above. The absolute will take care of reverse sequence.</li>
+</ol>
+<pre class="r"><code>sequence_check = abs(diff(sequence_check))
+sequence_check</code></pre>
+<pre><code>##  [1]  1  1  1  1  1 26  0  0  0  5  1  1  1  1  1  0  0</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Now, if there was a sequence, the difference above will be 1. We now change everything else that is not a 1 to a zero.</li>
+</ol>
+<pre class="r"><code>sequence_check = ifelse(sequence_check == 1, 1, 0)
+sequence_check</code></pre>
+<pre><code>##  [1] 1 1 1 1 1 0 0 0 0 0 1 1 1 1 1 0 0</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>Cool! Now we can find do like we did before, see how many times each was repeated, and have the output looking like a summary.</li>
+</ol>
+<pre class="r"><code>r = rle(sequence_check)
+r</code></pre>
+<pre><code>## Run Length Encoding
+##   lengths: int [1:4] 5 5 5 2
+##   values : num [1:4] 1 0 1 0</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>Again, we are interested in ones only, so we extract from the output above cases where the value is one, and we deduct 1</li>
+</ol>
+<pre class="r"><code>sequence_check = (r$lengths[r$values == 1]) - 1
+sequence_check</code></pre>
+<pre><code>## [1] 4 4</code></pre>
+<ol start="6" style="list-style-type: decimal">
+<li>We do a sum of the output to get the total number of instances a sequence occurs</li>
+</ol>
+<pre class="r"><code>sequence_check = sum(sequence_check)
+sequence_check</code></pre>
+<pre><code>## [1] 8</code></pre>
+<ol start="7" style="list-style-type: decimal">
+<li>Finally, for efficiency, we put all these steps into a function. The function takes in the splitted password e and the variable type The variable type will be either letters, numbers or symbols. The function returns the total instances a sequence occurs</li>
+</ol>
+<pre class="r"><code>sequence_checker = function(split_pass, var_type) {
+    
+  if(var_type == &quot;numbers&quot;){
+    
+    sequence_check = as.integer(ifelse(split_pass %in% (0:9), split_pass, 0))
+    
+  } else if (var_type == &quot;symbols&quot;){
+    
+    sequence_check = ifelse(split_pass %in% symbols[1:13], match(split_pass, symbols[1:13]), 0)
+    
+  } else {
+    
+    sequence_check = ifelse(tolower(split_pass) %in% letters, match(tolower(split_pass), letters), 0)
+    
+  }
+  sequence_check = abs(diff(sequence_check))
+  sequence_check = ifelse(sequence_check == 1, 1, 0)
+  r = rle(sequence_check)
+  sequence_check = (r$lengths[r$values == 1]) - 1
+  sequence_check = sum(sequence_check)
+  return(sequence_check)
+}</code></pre>
+<p>sequential letters</p>
+<pre class="r"><code>split_pass</code></pre>
+<pre><code>##  [1] &quot;u&quot; &quot;V&quot; &quot;w&quot; &quot;x&quot; &quot;Y&quot; &quot;z&quot; &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;$&quot; &quot;E&quot; &quot;D&quot; &quot;c&quot; &quot;b&quot; &quot;a&quot; &quot;!&quot; &quot;@&quot; &quot;#&quot;</code></pre>
+<pre class="r"><code>sequence_letters = sequence_checker(split_pass, &quot;letters&quot;)
+sequence_letters</code></pre>
+<pre><code>## [1] 8</code></pre>
+<p>sequential numbers</p>
+<pre class="r"><code>sequence_num = sequence_checker(split_pass, &quot;numbers&quot;)
+sequence_num</code></pre>
+<pre><code>## [1] 2</code></pre>
+<p>sequential symbols</p>
+<pre class="r"><code>sequence_symbols = sequence_checker(split_pass, &quot;symbols&quot;)
+sequence_symbols</code></pre>
+<pre><code>## [1] 1</code></pre>
+<p>Just like we saw in additions, substraction scores will also be calculated using the counts we have generated above. The chunk below shows how each score will be calculated. They will then be added and resulting score stored and used to calculate the total score.</p>
+<pre class="r"><code>letters_only_score = letters_only
+numbers_only_score = numbers_only
+consecutive_upper_score = consecutive_upper * 2
+consecutive_lower_score = consecutive_lower * 2
+consecutive_numbers_score = consecutive_numbers * 2
+sequence_letters_score = sequence_letters * 3
+sequence_num_score = sequence_num * 3
+sequence_symbols_score = sequence_symbols * 3
+
+total_deductions = letters_only_score +
+  numbers_only_score +
+  consecutive_upper_score + 
+  consecutive_lower_score + 
+  consecutive_numbers_score +
+  sequence_letters_score + 
+  sequence_num_score +
+  sequence_symbols_score
+
+total_deductions </code></pre>
+<pre><code>## [1] 51</code></pre>
+<p>We now have the total addition and total deductions. Now, the password strength is supposed to range between 0 and 100. From our calculations, it is possible to get a negative score, as well as a score above 100. Therefore, should a score be less than 0, we want that to be o and if it is greater than 100, we want that to be 100. Otherwise, the total score is given by total additions - total deductions</p>
+<pre class="r"><code>total_score = ifelse((total_additions - total_additions) &lt; 0 , 0, ifelse((total_additions - total_additions) &gt; 100, 100, (total_additions - total_additions)))</code></pre>
+<p>We can now put all these together in a function and try a few passwords and see the output</p>
+<pre class="r"><code>cat(password_strength(&quot;PasswordTest34#&quot;))</code></pre>
+<pre><code>## Additions
+## Number of characters: 60 
+## Upper case characters:26 
+## Lower case characters: 10 
+## Numbers: 8 
+## Symbols: 6 
+## Middle Numbers and symbols: 4 
+## Requirements: 10 
+## 
+## Deductions 
+## Letters only: 0 
+## Numbers only: 0 
+## Consecutive upper: 0 
+## Consecutive lower: 16 
+## Consecutive numbers: 2 
+## Sequence letters: 0 
+## Sequence numbers: 0 
+## Sequence symbols: 0 
+## 
+## Total score: 100</code></pre>
+<pre class="r"><code>cat(password_strength(&quot;Enter4&quot;))</code></pre>
+<pre><code>## Additions
+## Number of characters: 24 
+## Upper case characters:10 
+## Lower case characters: 4 
+## Numbers: 4 
+## Symbols: 0 
+## Middle Numbers and symbols: 0 
+## Requirements: 0 
+## 
+## Deductions 
+## Letters only: 0 
+## Numbers only: 0 
+## Consecutive upper: 0 
+## Consecutive lower: 6 
+## Consecutive numbers: 0 
+## Sequence letters: 0 
+## Sequence numbers: 0 
+## Sequence symbols: 0 
+## 
+## Total score: 36</code></pre>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>We were able to build our own password meter in R! However, there is something slight missing, which I am still trying to figure out. In the website, there is a deduction called “Repeat Characters (Case Insensitive)”. I still haven’t figured out how it was arrived at. If you can, please try it out. You can inspect the page and check the code.</p>
+<p>Having done that, I am really pleased with myself, and if you have followed this blog at to this point, I am grateful that you took your time. In the process, I learnt a lot of cool stuff to do with strings, and I hope you have too. In case of suggestions or questions feel free to hit me up, and until next time, bye for now!</p>
+</div>
