@@ -1,7 +1,7 @@
 ---
 authors:
 - Martin Wanjiru
-bio: I am a Data Analyst, excited by working for a company highly driven by Data.
+bio: Martin is a Data Analyst, excited by working for a company highly driven by Data.
 education:
   courses:
   - course: Bachelor of Science in Mathematics
@@ -37,4 +37,4 @@ user_groups:
 - Visitors
 ---
 
-I am a Data Analyst who defines data as the new oil. I appreciate the crucial role data plays in aiding the management of a business to make data-driven business decisions. For this reason, I take pride in being among the team that uses business data for analysis to draw insights and present findings to the business management team in my current organization. I strive to learn and incorporate new and more effective ways of solving business problems using data. 
+Martin is a Data Analyst who defines data as the new oil. He appreciates the crucial role data plays in aiding the management of a business to make data-driven business decisions. For this reason, he take pride in being among the team that uses business data for analysis to draw insights and present findings to the business management team. He strive to learn and incorporate new and more effective ways of solving business problems using data. When he wants to take a breather, he plays table tennis 🏓. 
