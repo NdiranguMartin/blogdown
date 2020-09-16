@@ -3,11 +3,18 @@ title: "Password Strength Meter in R"
 author: "Martin Wanjiru"
 date: "2020-05-21"
 output: 
-  html_document
+  html_document:
+    number_section: no
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+runtime: shiny
 ---
 
 
 
+<div id="section-introdution" class="section level2">
+<h2>Introdution</h2>
 <p>Passwords. Keys to our riches, or our personal info. Equivalent to the keys to a safe box if this was 1967. But its 2020, so you’ve put most of your stuff online. But how secure are your passwords? Let me guess; it’s your phone number! Or a combo of your first name and your year of birth! But probably not. You probably have invested time to think and come up with a strong password. But how strong is it anyway? Have you tried running it in a password meter? I don’t know, but I hope you got it right. Anyway, I needed a password meter. I wanted to know how strong or weak my password was. That’s how I came across <a href="http://www.passwordmeter.com/" class="uri">http://www.passwordmeter.com/</a>. The site indicated how the calculations were made, which I found interesting. I thought about doing it in R, because it was all about REGEX, and I enjoy dealing with strings. At that moment, I couldn’t do much, but finally, here we are!</p>
 <p>There are really no given set of rules or requirements for a password. This varies typically from website to website. However, we can say with some substantial level of confidence that the rules below are most common. An acceptable password;</p>
 <ul>
@@ -63,26 +70,36 @@ output:
 <p>Loading required libraries;</p>
 <pre class="r"><code>library(stringi)
 library(stringr)</code></pre>
-<div id="addition" class="section level2">
+</div>
+<div id="section-addition" class="section level2">
 <h2>Addition</h2>
-<p>Number of Characters</p>
+<div id="section-number-of-characters" class="section level3">
+<h3>Number of Characters</h3>
 <pre class="r"><code>password = &quot;PasswordTest34#&quot;
 num_chars = nchar(password)
 num_chars</code></pre>
 <pre><code>## [1] 15</code></pre>
-<p>Uppercase Letters</p>
+</div>
+<div id="section-uppercase-letters" class="section level3">
+<h3>Uppercase Letters</h3>
 <pre class="r"><code>upper_case = stringi::stri_count(password, regex  = &quot;[A-Z]&quot;)
 upper_case</code></pre>
 <pre><code>## [1] 2</code></pre>
-<p>Lowercase Letters</p>
+</div>
+<div id="section-lowercase-letters" class="section level3">
+<h3>Lowercase Letters</h3>
 <pre class="r"><code>lower_case = stringi::stri_count(password, regex  = &quot;[a-z]&quot;)
 lower_case</code></pre>
 <pre><code>## [1] 10</code></pre>
-<p>Numbers</p>
+</div>
+<div id="section-numbers" class="section level3">
+<h3>Numbers</h3>
 <pre class="r"><code>nums = stringi::stri_count(password, regex  = &quot;[0-9]&quot;)
 nums</code></pre>
 <pre><code>## [1] 2</code></pre>
-<p>Symbols</p>
+</div>
+<div id="section-symbols" class="section level3">
+<h3>Symbols</h3>
 <p>Here, we create a vector that contains all the possibly symbols (or at least all possible symbols I could trace. Forgive me if I repeated any)</p>
 <pre class="r"><code>symbols = c(&quot;~&quot;, &quot;!&quot;, &quot;@&quot;, &quot;#&quot;, &quot;\\$&quot;, &quot;%&quot;, &quot;\\^&quot;, &quot;&amp;&quot;, &quot;\\*&quot;, &quot;\\(&quot; ,&quot;\\)&quot;, &quot;-&quot;, &quot;\\+&quot;, &quot;\\_&quot;, &quot;=&quot;, &quot;`&quot; ,
               &quot;\\{&quot; ,&quot;\\}&quot; ,&quot;\\[&quot; ,&quot;\\]&quot;,&quot;:&quot;, &quot;;&quot; , &quot;&lt;&quot; , &quot;&gt;&quot;, &quot;\\?&quot; ,&quot;,&quot; ,&quot;\\.&quot;, &quot;\\&#39;&quot;, &quot;@&quot;, &quot;#&quot;, noquote(&quot;\&quot;&quot;))</code></pre>
@@ -90,7 +107,9 @@ nums</code></pre>
 <pre class="r"><code>num_symbols = stringr::str_count(password, paste(symbols, collapse = &quot;|&quot;))
 num_symbols</code></pre>
 <pre><code>## [1] 1</code></pre>
-<p>Mid numbers and symbols</p>
+</div>
+<div id="section-mid-numbers-and-symbols" class="section level3">
+<h3>Mid numbers and symbols</h3>
 <p>To get the number of middle symbols and numbers, we first eliminate the first and last characters, then count the number of numbers and symbols</p>
 <pre class="r"><code>mid_chars = gsub(&#39;^.|.$&#39;, &#39;&#39;, password)
 mid_chars</code></pre>
@@ -101,6 +120,9 @@ midnums</code></pre>
 <pre class="r"><code>mid_symbols = stringr::str_count(mid_chars, paste(symbols, collapse = &quot;|&quot;))
 mid_symbols</code></pre>
 <pre><code>## [1] 0</code></pre>
+</div>
+<div id="section-requirements" class="section level3">
+<h3>Requirements</h3>
 <p>All good! Now its time to create the actual scores from these counts. Some conditions will have to be met for some of these to apply, while others will not require any condition.</p>
 <p>The requirements score is a tricky one. For the requirements score to exist, the mandatory requirement of 8 characters should be met and the 3 out of 4 other requirements. If any misses, then its a zero. So we will,</p>
 <ol style="list-style-type: decimal">
@@ -151,19 +173,25 @@ mid_nums_symbol_score</code></pre>
 total_additions</code></pre>
 <pre><code>## [1] 124</code></pre>
 </div>
-<div id="subtraction" class="section level2">
+</div>
+<div id="section-subtraction" class="section level2">
 <h2>Subtraction</h2>
 <p>Now, lets explore the patterns that lead to deductions. Some are straight forward, but most of them will require us to do something extra! But we are up to the task!</p>
-<p>letters only</p>
+<div id="section-letters-only" class="section level3">
+<h3>Letters only</h3>
 <p>There will be deduction if the password has letters only. To check this, we can compare the number of characters and the number of uppercase and lowercase letters</p>
 <pre class="r"><code>letters_only = ifelse(num_chars == (upper_case + lower_case), num_chars, 0)
 letters_only</code></pre>
 <pre><code>## [1] 0</code></pre>
-<p>numbers only</p>
+</div>
+<div id="section-numbers-only" class="section level3">
+<h3>Numbers only</h3>
 <pre class="r"><code>numbers_only = ifelse(num_chars == (nums), num_chars, 0)
 numbers_only</code></pre>
 <pre><code>## [1] 0</code></pre>
-<p>consecutive uppercase letters</p>
+</div>
+<div id="section-consecutive-uppercase-letters" class="section level3">
+<h3>Consecutive uppercase letters</h3>
 <p>Here, we will a password that has consecutive uppercase letters i.e. PASSwordTEst34#, then we will:</p>
 <ol style="list-style-type: decimal">
 <li>first create a function that takes in our password and returns a vector with each character as an object of the vector.</li>
@@ -203,7 +231,9 @@ consecutive_upper</code></pre>
 <pre class="r"><code>consecutive_upper = sum(consecutive_upper)
 consecutive_upper</code></pre>
 <pre><code>## [1] 4</code></pre>
-<p>Lowercase letters</p>
+</div>
+<div id="section-lowercase-letters-1" class="section level3">
+<h3>Lowercase letters</h3>
 <p>The above procedure is repeated to get the total number of instances with consecutive lowercase letters</p>
 <pre class="r"><code>split_pass = split_function(password)
 consecutive_lower = ifelse(split_pass %in% letters, 1, 0)
@@ -212,7 +242,9 @@ consecutive_lower = (r$lengths[r$values == 1]) - 1
 consecutive_lower = sum(consecutive_lower)
 consecutive_lower</code></pre>
 <pre><code>## [1] 4</code></pre>
-<p>Consecutive numbers</p>
+</div>
+<div id="section-consecutive-numbers" class="section level3">
+<h3>Consecutive numbers</h3>
 <pre class="r"><code>split_pass = split_function(password)
 consecutive_numbers = ifelse(split_pass %in% (0:9), 1, 0)
 r = rle(consecutive_numbers)
@@ -220,7 +252,9 @@ consecutive_numbers = (r$lengths[r$values == 1]) - 1
 consecutive_numbers = sum(consecutive_numbers)
 consecutive_numbers</code></pre>
 <pre><code>## [1] 1</code></pre>
-<p>Letters, numbers, and symbols sequence</p>
+</div>
+<div id="section-letters-numbers-and-symbols-sequence" class="section level3">
+<h3>Letters, numbers, and symbols sequence</h3>
 <p>Here, we want to check for any sequential letters, which respect to the alphabet regardless of the case. For it to be a sequence, the minimum sequential letters that must be there is 3. For instance, if the password is “abcdef”, then the instances of sequential letters are abc, bcd, cde, and def. i.e. four instances. The sequence can also be in reverse order. For instance, “mlkji” is still a sequence! The same case applies to numbers (0-9) and symbols (~ to +)
 To achieve this, we will;</p>
 <ol style="list-style-type: decimal">
@@ -290,17 +324,23 @@ sequence_check</code></pre>
   sequence_check = sum(sequence_check)
   return(sequence_check)
 }</code></pre>
-<p>sequential letters</p>
+</div>
+<div id="section-sequential-letters" class="section level3">
+<h3>Sequential letters</h3>
 <pre class="r"><code>split_pass</code></pre>
 <pre><code>##  [1] &quot;u&quot; &quot;V&quot; &quot;w&quot; &quot;x&quot; &quot;Y&quot; &quot;z&quot; &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;$&quot; &quot;E&quot; &quot;D&quot; &quot;c&quot; &quot;b&quot; &quot;a&quot; &quot;!&quot; &quot;@&quot; &quot;#&quot;</code></pre>
 <pre class="r"><code>sequence_letters = sequence_checker(split_pass, &quot;letters&quot;)
 sequence_letters</code></pre>
 <pre><code>## [1] 8</code></pre>
-<p>sequential numbers</p>
+</div>
+<div id="section-sequential-numbers" class="section level3">
+<h3>Sequential numbers</h3>
 <pre class="r"><code>sequence_num = sequence_checker(split_pass, &quot;numbers&quot;)
 sequence_num</code></pre>
 <pre><code>## [1] 2</code></pre>
-<p>sequential symbols</p>
+</div>
+<div id="section-sequential-symbols" class="section level3">
+<h3>Sequential symbols</h3>
 <pre class="r"><code>sequence_symbols = sequence_checker(split_pass, &quot;symbols&quot;)
 sequence_symbols</code></pre>
 <pre><code>## [1] 1</code></pre>
@@ -325,54 +365,20 @@ total_deductions = letters_only_score +
 
 total_deductions </code></pre>
 <pre><code>## [1] 51</code></pre>
+</div>
+</div>
+<div id="section-bringing-all-together" class="section level2">
+<h2>Bringing all together</h2>
 <p>We now have the total addition and total deductions. Now, the password strength is supposed to range between 0 and 100. From our calculations, it is possible to get a negative score, as well as a score above 100. Therefore, should a score be less than 0, we want that to be o and if it is greater than 100, we want that to be 100. Otherwise, the total score is given by total additions - total deductions</p>
 <pre class="r"><code>total_score = ifelse((total_additions - total_additions) &lt; 0 , 0, ifelse((total_additions - total_additions) &gt; 100, 100, (total_additions - total_additions)))</code></pre>
-<p>We can now put all these together in a function and try a few passwords and see the output</p>
-<pre class="r"><code>cat(password_strength(&quot;PasswordTest34#&quot;))</code></pre>
-<pre><code>## Additions
-## Number of characters: 60 
-## Upper case characters:26 
-## Lower case characters: 10 
-## Numbers: 8 
-## Symbols: 6 
-## Middle Numbers and symbols: 4 
-## Requirements: 10 
-## 
-## Deductions 
-## Letters only: 0 
-## Numbers only: 0 
-## Consecutive upper: 0 
-## Consecutive lower: 16 
-## Consecutive numbers: 2 
-## Sequence letters: 0 
-## Sequence numbers: 0 
-## Sequence symbols: 0 
-## 
-## Total score: 100</code></pre>
-<pre class="r"><code>cat(password_strength(&quot;Enter4&quot;))</code></pre>
-<pre><code>## Additions
-## Number of characters: 24 
-## Upper case characters:10 
-## Lower case characters: 4 
-## Numbers: 4 
-## Symbols: 0 
-## Middle Numbers and symbols: 0 
-## Requirements: 0 
-## 
-## Deductions 
-## Letters only: 0 
-## Numbers only: 0 
-## Consecutive upper: 0 
-## Consecutive lower: 6 
-## Consecutive numbers: 0 
-## Sequence letters: 0 
-## Sequence numbers: 0 
-## Sequence symbols: 0 
-## 
-## Total score: 36</code></pre>
+<p>We can now put all these together in a function and try a few passwords and see the output
+<div class="form-group shiny-input-container" style="width: 300px;">
+<label class="control-label" for="password">Try a password</label>
+<input id="password" type="text" class="form-control" value=""/>
+</div><pre id="out10c84b97433363dc" class="shiny-text-output noplaceholder"></pre></p>
 </div>
-<div id="conclusion" class="section level2">
+<div id="section-conclusion" class="section level2">
 <h2>Conclusion</h2>
 <p>We were able to build our own password meter in R! However, there is something slight missing, which I am still trying to figure out. In the website, there is a deduction called “Repeat Characters (Case Insensitive)”. I still haven’t figured out how it was arrived at. If you can, please try it out. You can inspect the page and check the code.</p>
-<p>Having done that, I am really pleased with myself, and if you have followed this post at to this point, I am grateful that you took your time. In the process, I learnt a lot of cool stuff to do with strings, and I hope you have too. In case of suggestions or questions feel free to hit me up, and until next time, bye for now!</p>
+<p>Having done that, I am really pleased with myself, and if you have followed this post at to this point, I am grateful that you took your time. In the process, I learnt a lot of cool stuff to do with strings, and I hope you have too. In case of suggestions or questions feel free to hit me up, and until next time, bye for now! And Kinaro was here when I did this, but he was sleeping!</p>
 </div>

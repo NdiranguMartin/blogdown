@@ -3,12 +3,19 @@ title: "Password Strength Meter in R"
 author: "Martin Wanjiru"
 date: "2020-05-21"
 output: 
-  html_document
+  html_document:
+    number_section: no
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(shiny)
 ```
+## Introdution
 Passwords. Keys to our riches, or our personal info. Equivalent to the keys to a safe box if this was 1967. But its 2020, so you've put most of your stuff online. But how secure are your passwords? Let me guess; it's your phone number! Or a combo of your first name and your year of birth! But probably not. You probably have invested time to think and come up with a strong password. But how strong is it anyway? Have you tried running it in a password meter? I don't know, but I hope you got it right. Anyway, I needed a password meter. I wanted to know how strong or weak my password was. That's how I came across <http://www.passwordmeter.com/>. The site indicated how the calculations were made, which I found interesting. I thought about doing it in R, because it was all about REGEX, and I enjoy dealing with strings. At that moment, I couldn't do much, but finally, here we are!
 
 There are really no given set of rules or requirements for a password. This varies typically from website to website. However, we can say with some substantial level of confidence that the rules below are most common. An acceptable password;
@@ -63,28 +70,28 @@ library(stringr)
 ```
 
 ## Addition
-Number of Characters
+### Number of Characters
 ```{r}
 password = "PasswordTest34#"
 num_chars = nchar(password)
 num_chars
 ```
-Uppercase Letters
+### Uppercase Letters
 ```{r}
 upper_case = stringi::stri_count(password, regex  = "[A-Z]")
 upper_case
 ```
-Lowercase Letters
+### Lowercase Letters
 ```{r}
 lower_case = stringi::stri_count(password, regex  = "[a-z]")
 lower_case
 ```
-Numbers
+### Numbers
 ```{r}
 nums = stringi::stri_count(password, regex  = "[0-9]")
 nums
 ```
-Symbols
+### Symbols
 
 Here, we create a vector that contains all the possibly symbols (or at least all possible symbols I could trace. Forgive me if I repeated any)
 ```{r}
@@ -96,7 +103,7 @@ We then look for the count of these symbols in the password
 num_symbols = stringr::str_count(password, paste(symbols, collapse = "|"))
 num_symbols
 ```
-Mid numbers and symbols
+### Mid numbers and symbols
 
 To get the number of middle symbols and numbers, we first eliminate the first and last characters, then count the number of numbers and symbols
 ```{r}
@@ -107,6 +114,7 @@ midnums
 mid_symbols = stringr::str_count(mid_chars, paste(symbols, collapse = "|"))
 mid_symbols
 ```
+### Requirements
 All good! Now its time to create the actual scores from these counts. Some conditions will have to be met for some of these to apply, while others will not require any condition.
 
 The requirements score is a tricky one. For the requirements score to exist, the mandatory requirement of 8 characters should be met and the 3 out of 4 other requirements. If any misses, then its a zero. So we will, 
@@ -168,19 +176,19 @@ total_additions
 
 Now, lets explore the patterns that lead to deductions. Some are straight forward, but most of them will require us to do something extra! But we are up to the task!
 
-letters only
+### Letters only
 
 There will be deduction if the password has letters only. To check this, we can compare the number of characters and the number of uppercase and lowercase letters
 ```{r}
 letters_only = ifelse(num_chars == (upper_case + lower_case), num_chars, 0)
 letters_only
 ```
-numbers only
+### Numbers only
 ```{r}
 numbers_only = ifelse(num_chars == (nums), num_chars, 0)
 numbers_only
 ```
-consecutive uppercase letters 
+### Consecutive uppercase letters 
 
 Here, we will a password that has consecutive uppercase letters i.e. PASSwordTEst34#, then we will:
 
@@ -215,7 +223,7 @@ consecutive_upper
 consecutive_upper = sum(consecutive_upper)
 consecutive_upper
 ```
-Lowercase letters
+### Lowercase letters
 
 The above procedure is repeated to get the total number of instances with consecutive lowercase letters
 ```{r}
@@ -226,7 +234,7 @@ consecutive_lower = (r$lengths[r$values == 1]) - 1
 consecutive_lower = sum(consecutive_lower)
 consecutive_lower
 ```
-Consecutive numbers
+### Consecutive numbers
 ```{r}
 split_pass = split_function(password)
 consecutive_numbers = ifelse(split_pass %in% (0:9), 1, 0)
@@ -235,7 +243,7 @@ consecutive_numbers = (r$lengths[r$values == 1]) - 1
 consecutive_numbers = sum(consecutive_numbers)
 consecutive_numbers
 ```
-Letters, numbers, and symbols sequence
+### Letters, numbers, and symbols sequence
 
 Here, we want to check for any sequential letters, which respect to the alphabet regardless of the case. For it to be a sequence, the minimum sequential letters that must be there is 3. For instance, if the password is "abcdef", then the instances of sequential letters are abc, bcd, cde, and def. i.e. four instances. The sequence can also be in reverse order. For instance, "mlkji" is still a sequence! The same case applies to numbers (0-9) and symbols (~ to +)
 To achieve this, we will;
@@ -299,18 +307,18 @@ sequence_checker = function(split_pass, var_type) {
 }
 
 ```
-sequential letters
+### Sequential letters
 ```{r}
 split_pass
 sequence_letters = sequence_checker(split_pass, "letters")
 sequence_letters
 ```
-sequential numbers
+### Sequential numbers
 ```{r}
 sequence_num = sequence_checker(split_pass, "numbers")
 sequence_num
 ```
-sequential symbols
+### Sequential symbols
 ```{r}
 sequence_symbols = sequence_checker(split_pass, "symbols")
 sequence_symbols
@@ -337,6 +345,7 @@ total_deductions = letters_only_score +
 
 total_deductions 
 ```
+## Bringing all together
 We now have the total addition and total deductions. Now, the password strength is supposed to range between 0 and 100. From our calculations, it is possible to get a negative score, as well as a score above 100. Therefore, should a score be less than 0, we want that to be o and if it is greater than 100, we want that to be 100. Otherwise, the total score is given by total additions - total deductions
 ```{r}
 total_score = ifelse((total_additions - total_additions) < 0 , 0, ifelse((total_additions - total_additions) > 100, 100, (total_additions - total_additions)))
@@ -434,33 +443,37 @@ password_strength <- function(password){
   
   total_score = ifelse((total_addition - total_deduction) < 0 , 0, ifelse((total_addition - total_deduction) > 100, 100, (total_addition - total_deduction)))
   
-  return(c(paste("Additions\nNumber of characters", character_count_score, sep = ": ") ,
-           paste("\nUpper case characters", upper_case_score, sep = ":"),
-           paste("\nLower case characters", lower_case_score, sep = ": "),
-           paste("\nNumbers", numbers_score, sep = ": "),
-           paste("\nSymbols", symbols_score, sep = ": "),
-           paste("\nMiddle Numbers and symbols", mid_nums_symbol_score, sep = ": "),
-           paste("\nRequirements", requirements_score, sep = ": "),
-           paste("\n\nDeductions", sep = ""),
-           paste("\nLetters only", letters_only_score, sep = ": "),
-           paste("\nNumbers only", numbers_only_score, sep = ": "),
-           paste("\nConsecutive upper", consecutive_upper_score, sep = ": "),
-           paste("\nConsecutive lower", consecutive_lower_score, sep = ": "),
-           paste("\nConsecutive numbers", consecutive_numbers_score, sep = ": "),
-           paste("\nSequence letters", sequence_letters_score, sep = ": "),
-           paste("\nSequence numbers", sequence_num_score, sep = ": "),
-           paste("\nSequence symbols", sequence_symbols_score, sep = ": "),
-           paste("\n\nTotal score", total_score, sep = ": ")))
+  return((paste(paste("Additions \n\nNumber of characters: ", character_count_score) ,
+           paste("Upper case characters", upper_case_score, sep = ":"),
+           paste("Lower case characters", lower_case_score, sep = ": "),
+           paste("Numbers", numbers_score, sep = ": "),
+           paste("Symbols", symbols_score, sep = ": "),
+           paste("Middle Numbers and symbols", mid_nums_symbol_score, sep = ": "),
+           paste("Requirements", requirements_score, sep = ": "),
+           paste("\nDeductions\n", sep = ""),
+           paste("Letters only", letters_only_score, sep = ": "),
+           paste("Numbers only", numbers_only_score, sep = ": "),
+           paste("Consecutive upper", consecutive_upper_score, sep = ": "),
+           paste("Consecutive lower", consecutive_lower_score, sep = ": "),
+           paste("Consecutive numbers", consecutive_numbers_score, sep = ": "),
+           paste("Sequence letters", sequence_letters_score, sep = ": "),
+           paste("Sequence numbers", sequence_num_score, sep = ": "),
+           paste("Sequence symbols", sequence_symbols_score, sep = ": "),
+           paste("\n\nTotal score", total_score, sep = ": "), sep = "  \n")))
+  
   
 
   }
 ```
 We can now put all these together in a function and try a few passwords and see the output
-```{r}
-cat(password_strength("PasswordTest34#"))
-cat(password_strength("Enter4"))
+```{r, echo=F}
+textInput("password", "Try a password", "", width = 300)
+renderPrint({
+  cat(password_strength(input$password))
+})
 ```
+
 ## Conclusion
 We were able to build our own password meter in R! However, there is something slight missing, which I am still trying to figure out. In the website, there is a deduction called "Repeat Characters (Case Insensitive)". I still haven't figured out how it was arrived at. If you can, please try it out. You can inspect the page and check the code. 
 
-Having done that, I am really pleased with myself, and if you have followed this post at to this point, I am grateful that you took your time. In the process, I learnt a lot of cool stuff to do with strings, and I hope you have too. In case of suggestions or questions feel free to hit me up, and until next time, bye for now!
+Having done that, I am really pleased with myself, and if you have followed this post at to this point, I am grateful that you took your time. In the process, I learnt a lot of cool stuff to do with strings, and I hope you have too. In case of suggestions or questions feel free to hit me up, and until next time, bye for now! And Kinaro was here when I did this, but he was sleeping!
