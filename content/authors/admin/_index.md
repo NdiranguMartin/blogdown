@@ -14,7 +14,7 @@ interests:
 - Data Visualization
 - Machine Learning
 organizations:
-- name: Branch International
+- name: Apollo Agriculture
   url: ""
 role: Data Analyst
 social:
