@@ -17,13 +17,24 @@ date_format = "Jan 2006"
 #   Required fields are `title`, `company`, and `date_start`.
 #   Leave `date_end` empty if it's your current employer.
 #   Begin/end multi-line descriptions with 3 quotes `"""`.
+
+[[experience]]
+  title = "Data Analyst"
+  company = "Apollo Agriculture"
+  company_url = ""
+  location = "Nairobi, Kenya"
+  date_start = "2020-11-28"
+  date_end = ""
+  description = """
+
+  """
 [[experience]]
   title = "Data Analyst"
   company = "Branch International"
   company_url = ""
   location = "Nairobi, Kenya"
   date_start = "2020-01-06"
-  date_end = ""
+  date_end = "2020-05-31"
   description = """
   Responsibilities include:
   
