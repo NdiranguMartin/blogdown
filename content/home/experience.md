@@ -26,6 +26,13 @@ date_format = "Jan 2006"
   date_start = "2020-11-28"
   date_end = ""
   description = """
+  Responsibilities include:
+  
+  * Use Stitch Data Loader to integrate various data sources to the BI Warehouse (EL part of ELT process)
+  * Use DBT to do data transformation (T part of the ELT process)in the warehouse and Gitlab CI for continuous integrations.
+  * Create ad-hoc queries and dashboards on Redash
+  * Create dashboards for different business processes on Tableau
+  * Create API’s in Flask (python) to enable users access desired data from the BI warehouse
 
   """
 [[experience]]

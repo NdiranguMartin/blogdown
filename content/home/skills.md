@@ -30,7 +30,7 @@ subtitle = ""
   icon = "python"
   icon_pack = "fab"
   name = "Python"
-  description = "50%"
+  description = "80%"
 # Uncomment to use emoji icons.
 # [[feature]]
 #  icon = ":smile:"
