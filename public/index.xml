@@ -5,7 +5,7 @@
     <link>/</link>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     <description>M A R T I N</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© Martin Wanjiru, 2021</copyright><lastBuildDate>Sat, 01 Jun 2030 13:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© Martin Wanjiru, 2022</copyright><lastBuildDate>Sat, 01 Jun 2030 13:00:00 +0000</lastBuildDate>
     <image>
       <url>/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
       <title>M A R T I N</title>
@@ -446,7 +446,7 @@ total_deductions &lt;/code&gt;&lt;/pre&gt;
 &lt;div class=&#34;form-group shiny-input-container&#34; style=&#34;width: 300px;&#34;&gt;
 &lt;label class=&#34;control-label&#34; for=&#34;password&#34;&gt;Try a password&lt;/label&gt;
 &lt;input id=&#34;password&#34; type=&#34;text&#34; class=&#34;form-control&#34; value=&#34;&#34;/&gt;
-&lt;/div&gt;&lt;pre id=&#34;out10c84b97433363dc&#34; class=&#34;shiny-text-output noplaceholder&#34;&gt;&lt;/pre&gt;&lt;/p&gt;
+&lt;/div&gt;&lt;pre id=&#34;outfb0520b6aefa8c59&#34; class=&#34;shiny-text-output noplaceholder&#34;&gt;&lt;/pre&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;section-conclusion&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Conclusion&lt;/h2&gt;
@@ -602,24 +602,6 @@ Three
 &lt;a href=&#34;https://spectrum.chat/academic&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Ask&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;
 &lt;a href=&#34;https://sourcethemes.com/academic/docs/managing-content/#create-slides&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Documentation&lt;/a&gt;&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Privacy Policy</title>
-      <link>/privacy/</link>
-      <pubDate>Thu, 28 Jun 2018 00:00:00 +0100</pubDate>
-      <guid>/privacy/</guid>
-      <description>&lt;p&gt;&amp;hellip;&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Terms</title>
-      <link>/terms/</link>
-      <pubDate>Thu, 28 Jun 2018 00:00:00 +0100</pubDate>
-      <guid>/terms/</guid>
-      <description>&lt;p&gt;&amp;hellip;&lt;/p&gt;
 </description>
     </item>
     
