@@ -5,7 +5,7 @@
     <link>/post/</link>
       <atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     <description>Posts</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© Martin Wanjiru, 2021</copyright><lastBuildDate>Thu, 21 May 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© Martin Wanjiru, 2022</copyright><lastBuildDate>Thu, 21 May 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
       <title>Posts</title>
@@ -382,7 +382,7 @@ total_deductions &lt;/code&gt;&lt;/pre&gt;
 &lt;div class=&#34;form-group shiny-input-container&#34; style=&#34;width: 300px;&#34;&gt;
 &lt;label class=&#34;control-label&#34; for=&#34;password&#34;&gt;Try a password&lt;/label&gt;
 &lt;input id=&#34;password&#34; type=&#34;text&#34; class=&#34;form-control&#34; value=&#34;&#34;/&gt;
-&lt;/div&gt;&lt;pre id=&#34;out10c84b97433363dc&#34; class=&#34;shiny-text-output noplaceholder&#34;&gt;&lt;/pre&gt;&lt;/p&gt;
+&lt;/div&gt;&lt;pre id=&#34;outfb0520b6aefa8c59&#34; class=&#34;shiny-text-output noplaceholder&#34;&gt;&lt;/pre&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;section-conclusion&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Conclusion&lt;/h2&gt;

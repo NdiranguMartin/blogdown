@@ -1,7 +1,7 @@
 ---
 authors:
 - Martin Wanjiru
-bio: Martin is a Data Analyst, excited by working for a company highly driven by Data.
+bio: Martin is a Data Engineer at Meta, London, UK. 
 education:
   courses:
   - course: Bachelor of Science in Mathematics
@@ -10,13 +10,13 @@ education:
 
 email: "wanjirumartin88@gmail.com"
 interests:
-- Data Analysis
+- Data Engineer
 - Data Visualization
 - Machine Learning
 organizations:
-- name: Apollo Agriculture
-  url: ""
-role: Data Analyst
+- name: Meta
+  url: "https://about.facebook.com/Meta/"
+role: Data Engineer
 social:
 - icon: envelope
   icon_pack: fas
@@ -37,4 +37,4 @@ user_groups:
 - Visitors
 ---
 
-Martin is a Data Analyst who defines data as the new oil. He appreciates the crucial role data plays in aiding the management of a business to make data-driven business decisions. For this reason, he take pride in being among the team that uses business data for analysis to draw insights and present findings to the business management team. He strive to learn and incorporate new and more effective ways of solving business problems using data. When he wants to take a breather, he plays table tennis 🏓
+Martin is a Data Engineer who defines data as the new oil. He appreciates the crucial role data plays in aiding product teams to make data-driven decisions. For this reason, he take pride in being among the team that builds and maintains data artifacts that are used by data scientists and analysts to draw insights and make informed recommendations to product teams. He strives to learn and incorporate new and more effective ways to build and maintain data infrastructure. When he wants to take a breather, he plays table tennis, badminton, squash, or FIFA on play station!

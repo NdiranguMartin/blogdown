@@ -19,12 +19,36 @@ date_format = "Jan 2006"
 #   Begin/end multi-line descriptions with 3 quotes `"""`.
 
 [[experience]]
+  title = "Data Engineer"
+  company = "Meta Platforms, Inc."
+  company_url = ""
+  location = "London, United Kingdon"
+  date_start = "2020-05-03"
+  date_end = ""
+  description = """
+  Responsibilities include:
+  
+  * Partner with leadership, engineers, program managers and data scientists to understand data needs
+  * Apply proven expertise and build high-performance scalable data warehouses
+  * Design, build and launch efficient & reliable data pipelines to move and transform data (both large and small amounts)
+  * Securely source external data from numerous partners
+  * Intelligently design data models for optimal storage and retrieval
+  * Deploy inclusive data quality checks to ensure high quality of data
+  * Optimize existing pipelines and maintain of all domain-related data pipelines
+  * Ownership of the end-to-end data engineering component of the solution
+  * Support on-call shift as needed to support the team
+  * Design and develop new systems in partnership with software engineers to enable quick and easy consumption of data
+
+  """
+
+
+[[experience]]
   title = "Data Analyst"
   company = "Apollo Agriculture"
   company_url = ""
   location = "Nairobi, Kenya"
   date_start = "2020-11-28"
-  date_end = ""
+  date_end = "2022-03-04"
   description = """
   Responsibilities include:
   
