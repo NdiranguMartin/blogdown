@@ -23,7 +23,7 @@ date_format = "Jan 2006"
   company = "Meta Platforms, Inc."
   company_url = ""
   location = "London, United Kingdon"
-  date_start = "2020-05-03"
+  date_start = "2022-05-03"
   date_end = ""
   description = """
   Responsibilities include:
